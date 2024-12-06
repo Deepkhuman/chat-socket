@@ -14,7 +14,8 @@ import List from "@mui/material/List";
 import Divider from "@mui/material/Divider";
 import PersonIcon from "@mui/icons-material/Person";
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
-const Sidebar = () => {
+
+const Sidebar = ({ button }) => {
   const [value, setValue] = useState(0);
 
   const handleChange = (event, newValue) => {
@@ -22,50 +23,80 @@ const Sidebar = () => {
   };
 
   return (
-    <>
-      <Box sx={{ width: "25vw" }}>
-        <Header />
-        <Tabs
-          value={value}
-          onChange={handleChange}
-          aria-label="basic tabs example"
-          variant="fullWidth"
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        width: "20vw",
+      }}
+    >
+      <Header />
+
+      <Tabs
+        value={value}
+        onChange={handleChange}
+        aria-label="basic tabs example"
+        variant="fullWidth"
+        sx={{
+          paddingBottom: "16px",
+        }}
+      >
+        <Tab
+          label="Chat List"
+          icon={<ChatBubbleOutlineIcon />}
+          iconPosition="start"
+        />
+        <Tab label="User List" icon={<PersonIcon />} iconPosition="start" />
+      </Tabs>
+
+      {value === 0 && (
+        <List
+          sx={{
+            pt: 0,
+            overflowY: "auto",
+            flexGrow: 1,
+            maxHeight: "calc(100vh - 200px)",
+            scrollbarWidth: "thin",
+          }}
         >
-          <Tab
-            label="Chat List"
-            icon={<ChatBubbleOutlineIcon />}
-            iconPosition="start"
-          />
-          <Tab label="User List" icon={<PersonIcon />} iconPosition="start" />
-        </Tabs>
-        {value === 0 && (
-          <List>
-            <ListItem alignItems="flex-start">
-              <ListItemAvatar>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-              </ListItemAvatar>
-              <ListItemText
-                primary="Brunch this weekend?"
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      sx={{ color: "text.primary", display: "inline" }}
-                    >
-                      Ali Connors
-                    </Typography>
-                    {" — I'll be in your neighborhood doing errands this…"}
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
-            <Divider variant="inset" component="li" />
-          </List>
-        )}
-        {value === 1 && <div>1</div>}
-      </Box>
-    </>
+          {Array(10)
+            .fill(0)
+            .map((_, index) => (
+              <React.Fragment key={index}>
+                <ListItem
+                  alignItems="flex-start"
+                  sx={{
+                    minHeight: 100,
+                    padding: "16px",
+                  }}
+                >
+                  <ListItemAvatar>
+                    <Avatar
+                      alt="Remy Sharp"
+                      src="/static/images/avatar/1.jpg"
+                    />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary="John Doe"
+                    secondary={
+                      <Typography variant="caption">Ali Connors</Typography>
+                    }
+                  />
+                </ListItem>
+                <Divider component="li" />
+              </React.Fragment>
+            ))}
+        </List>
+      )}
+
+      {value === 1 && (
+        <Box sx={{ padding: 2 }}>
+          <Typography variant="h6">User List</Typography>
+          <div>Content for User List goes here</div>
+        </Box>
+      )}
+    </Box>
   );
 };
 

@@ -3,8 +3,14 @@ const router = require("./routes/auth");
 const app = express();
 const cors = require("cors");
 const { ConnectDb } = require("./DB/db");
-app.use(cors());
 require("dotenv").config();
+
+const { createServer } = require("http");
+const { Server } = require("socket.io");
+
+const httpServer = createServer(app);
+
+const socketInit = require("./Socket/index");
 
 app.use(
   cors({
@@ -14,7 +20,6 @@ app.use(
   })
 );
 
-const Port = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -22,6 +27,10 @@ ConnectDb();
 
 app.use("/api", router);
 
-app.listen(Port, () => {
+const Port = process.env.PORT || 3000;
+
+socketInit(httpServer);
+
+httpServer.listen(Port, () => {
   console.log(`Server is running on port ${Port}`);
 });

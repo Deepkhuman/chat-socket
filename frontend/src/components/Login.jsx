@@ -21,10 +21,9 @@ const Login = () => {
   const onSubmit = async (data) => {
     try {
       const response = await axiosClient.post("/login", data);
-      console.log(response.token);
       localStorage.setItem("token", response.token);
-      localStorage.setItem("loggedinUSer", response.name);
-      navigate("/dashboard");
+      localStorage.setItem("loggedinUSer", response.user.firstname);
+      navigate("/dashboard", { state: { userData: response.user } });
     } catch (error) {
       console.log(error.status);
       if (error.status === 401) {

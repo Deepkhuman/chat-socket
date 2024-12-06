@@ -8,11 +8,10 @@ async function getuser(req, res) {
     const users = await User.findAll();
 
     if (users.length > 0) {
-      console.log("Users found:", users);
+      console.log("total Users found:", users.length);
     } else {
       console.log("No users found");
     }
-    res.send(users);
   } catch (error) {
     console.error("_____.....>", error);
   }
@@ -51,7 +50,8 @@ async function login(req, res) {
     res.status(200).json({
       message: "Login success",
       token,
-      name: user.firstname,
+      // name: user.firstname,
+      user: user,
     });
   } catch (error) {
     res.status(500).json({
