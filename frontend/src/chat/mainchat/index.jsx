@@ -64,7 +64,6 @@ const Chatbox = ({
             SetroomData={SetroomData}
             roomData={roomData}
             messages={messages}
-            SetAllmsg={SetAllmsg}
           />
           <Footer handleSendmsg={handleSendmsg} />
         </>

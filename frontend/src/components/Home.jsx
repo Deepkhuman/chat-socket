@@ -104,10 +104,10 @@ const Home = () => {
         message,
         receiver: roomData.receiver,
         sender: userDetails,
+        isRead: false,
       };
       socketRef.current.emit("SEND_MSG", data);
       SetAllmsg((prev) => [...prev, data]);
-      console.log("yyyyyyyyyyyyyyyy", message);
     }
   };
 

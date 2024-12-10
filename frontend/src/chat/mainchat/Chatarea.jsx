@@ -7,10 +7,10 @@ import {
   ListItemText,
   Typography,
 } from "@mui/material";
-import React, { useEffect } from "react";
-import axiosClient from "../../Axios/axiosClient";
+import React, { useEffect, useState } from "react";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
 
-const Chatarea = ({ messages, user, SetAllmsg, roomData }) => {
+const Chatarea = ({ messages, user, roomData }) => {
   console.log("Current Messages:", messages);
 
   return (
@@ -30,19 +30,30 @@ const Chatarea = ({ messages, user, SetAllmsg, roomData }) => {
           width: "100%",
           display: "flex",
           flexDirection: "column",
-          padding: "5px",
+          padding: "8px",
         }}
       >
         {messages.map((item, index) => {
+          // const dateString = item?.sentAt;
+          // const date = new Date(dateString);
+
+          // console.log(item);
+          // const hours = date.getUTCHours();
+          // const minutes = date.getUTCMinutes();
+
+          // const time = `${hours.toString().padStart(2, "0")}:${minutes
+          //   .toString()
+          //   .padStart(2, "0")}`;
+
           if (!item?.sender?.id) return null;
 
           return item.sender.id === user?.id ? (
             <ListItem
               sx={{
-                width: "50%",
+                width: "fit-content",
                 display: "flex",
                 flexDirection: "row-reverse",
-                ml: "50%",
+                ml: "auto",
               }}
               key={index}
             >
@@ -57,19 +68,41 @@ const Chatarea = ({ messages, user, SetAllmsg, roomData }) => {
                   borderRadius: "3px",
                   mr: "5px",
                   textAlign: "right",
-                  bgcolor: "#6495ED",
+                  bgcolor: "#e2ffc7",
                 }}
                 key={item.id}
-                primary="Me"
-                secondary={
-                  <Typography variant="caption" align="right">
-                    {item.message}
+                primary={
+                  <Typography
+                    sx={{ color: "#000000", fontSize: "1rem" }}
+                    align="right"
+                  >
+                    {"Me"}
                   </Typography>
+                }
+                secondary={
+                  <>
+                    <Typography
+                      sx={{ color: "#000000" }}
+                      variant="caption"
+                      align="right"
+                    >
+                      {item.message}{" "}
+                      <DoneAllIcon
+                        sx={{
+                          ml: "2px",
+                          color: item.isRead == 1 ? "blue" : "black",
+                          fontSize: "1.6rem",
+                          mb: "4px",
+                          p: "4px",
+                        }}
+                      />
+                    </Typography>
+                  </>
                 }
               />
             </ListItem>
           ) : (
-            <ListItem sx={{ width: "50%" }} key={index}>
+            <ListItem sx={{ width: "fit-content" }} key={index}>
               <ListItemAvatar>
                 <Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
               </ListItemAvatar>
@@ -83,7 +116,23 @@ const Chatarea = ({ messages, user, SetAllmsg, roomData }) => {
                 }}
                 primary={item.sender.firstname}
                 secondary={
-                  <Typography variant="caption"> {item.message}</Typography>
+                  <>
+                    <Typography
+                      variant="caption"
+                      sx={{ display: "flex", flexDirection: "row" }}
+                    >
+                      {item.message}
+                      <Typography
+                        sx={{
+                          pl: "10px",
+                          fontSize: "0.8rem",
+                          fontWeight: "600",
+                        }}
+                      >
+                        {/* {time} */}
+                      </Typography>
+                    </Typography>
+                  </>
                 }
               />
             </ListItem>

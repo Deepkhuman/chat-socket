@@ -27,10 +27,12 @@ const Header = ({ button }) => {
         bgcolor: "primary.light",
         borderRadius: 0,
         color: "primary.contrastText",
+        bgcolor: "#016b61",
       }}
     >
       <CardHeader
         avatar={<Avatar>R</Avatar>}
+        sx={{ height: "85px" }}
         action={
           <IconButton
             aria-label="settings"
