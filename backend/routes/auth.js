@@ -1,4 +1,5 @@
 const { getuser, postdata, login } = require("../controllers/authUser");
+const { getPastMessages } = require("../controllers/message");
 const { ensureAuthenticated } = require("../middlewares/Auth");
 const {
   loginValidation,

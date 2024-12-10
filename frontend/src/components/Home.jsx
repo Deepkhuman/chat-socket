@@ -10,129 +10,138 @@ import { Chatbox } from "../chat/mainchat";
 const PATH = "http://localhost:3000";
 
 const Home = () => {
-	const [loggedinuser, setloggedinUser] = useState("");
-	const navigate = useNavigate();
-	const [Isconnected, SetIsconnected] = useState(false);
-	const [roomData, SetroomData] = useState({
-		room: null,
-		receiver: null,
-	});
-	const [allmsg, SetAllmsg] = useState([]);
-	const socketRef = useRef(null);
-	const [onlineusers, Setonlineusers] = useState([]);
-	const location = useLocation();
-	const userDetails = location.state?.userData;
+  const [loggedinuser, setloggedinUser] = useState("");
+  const navigate = useNavigate();
+  const [Isconnected, SetIsconnected] = useState(false);
+  const [roomData, SetroomData] = useState({
+    room: null,
+    receiver: null,
+  });
 
-	useEffect(() => {
-		socketRef.current = io.connect(PATH, {
-			withCredentials: true,
-			transports: ["websocket"],
-		});
+  const [allmsg, SetAllmsg] = useState([]);
+  const socketRef = useRef(null);
+  const [onlineusers, Setonlineusers] = useState([]);
+  const location = useLocation();
+  const userDetails = location.state?.userData;
 
-		socketRef.current.on("connect", () => {
-			SetIsconnected(true);
-			console.log("Socket connected with ID: ", socketRef.current.id);
-			if (userDetails) {
-				socketRef.current.emit("ADD_USER", userDetails);
-				socketRef.current.on("USER_ADDED", (data) => {
-					Setonlineusers(data);
-				});
-				socketRef.current.on("RECEIVE_MSG", (data) => {
-					console.log(data);
-					SetAllmsg((prev) => [...prev, data]);
-				});
-			}
-		});
+  useEffect(() => {
+    socketRef.current = io.connect(PATH, {
+      withCredentials: true,
+      transports: ["websocket"],
+    });
 
-		return () => {
-			if (socketRef.current) {
-				socketRef.current.disconnect();
-				console.log("Socket disconnected on component unmount");
-			}
-		};
-	}, []);
+    socketRef.current.on("connect", () => {
+      SetIsconnected(true);
+      console.log("Socket connected with ID: ", socketRef.current.id);
+      if (userDetails) {
+        socketRef.current.emit("ADD_USER", userDetails);
+        socketRef.current.on("USER_ADDED", (data) => {
+          Setonlineusers(data);
+        });
+        socketRef.current.on("RECEIVE_MSG", (data) => {
+          SetAllmsg((prev) => [...prev, data]);
+        });
+      }
+    });
 
-	useEffect(() => {
-		const token = localStorage.getItem("token");
-		const user = localStorage.getItem("loggedinUSer");
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        console.log("Socket disconnected on component unmount");
+      }
+    };
+  }, []);
 
-		if (!token) {
-			navigate("/login");
-			handleError("You must be logged in to access this page");
-		} else {
-			setloggedinUser(user);
-			verifyToken(token);
-		}
-	}, [navigate]);
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const user = localStorage.getItem("loggedinUSer");
 
-	async function verifyToken(token) {
-		try {
-			const response = await axiosClient.get("/", {
-				headers: {
-					authorization: `Bearer ${token}`,
-				},
-			});
-		} catch (error) {
-			handleError("Invalid session. Please log in again.");
-			localStorage.removeItem("token");
-			localStorage.removeItem("loggedinUSer");
-			navigate("/login");
-		}
-	}
+    if (!token) {
+      navigate("/login");
+      handleError("You must be logged in to access this page");
+    } else {
+      setloggedinUser(user);
+      verifyToken(token);
+    }
+  }, [navigate]);
 
-	async function handlelogout() {
-		try {
-			if (socketRef.current) {
-				socketRef.current.emit("LOGOUT");
-				socketRef.current.disconnect();
-				SetIsconnected(false);
-				console.log("Socket disconnected");
-			}
+  async function verifyToken(token) {
+    try {
+      const response = await axiosClient.get("/", {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      });
+    } catch (error) {
+      handleError("Invalid session. Please log in again.");
+      localStorage.removeItem("token");
+      localStorage.removeItem("loggedinUSer");
+      navigate("/login");
+    }
+  }
 
-			localStorage.removeItem("token");
-			localStorage.removeItem("loggedinUSer");
+  async function handlelogout() {
+    try {
+      if (socketRef.current) {
+        socketRef.current.emit("LOGOUT");
+        socketRef.current.disconnect();
+        SetIsconnected(false);
+        console.log("Socket disconnected");
+      }
 
-			navigate("/login");
-		} catch (error) {
-			console.log(error);
-		}
-	}
+      localStorage.removeItem("token");
+      localStorage.removeItem("loggedinUSer");
 
-	const handleSendmsg = (msg) => {
-		if (socketRef.current.connected) {
-			const data = {
-				msg,
-				receiver: roomData.receiver,
-				sender: userDetails,
-			};
-			socketRef.current.emit("SEND_MSG", data);
-			SetAllmsg((prev) => [...prev, data]);
-		}
-	};
+      navigate("/login");
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
-	return (
-		<>
-			<Paper
-				square
-				elevation={0}
-				sx={{ width: "100vw", display: "flex", height: "100vh" }}
-			>
-				<Button onClick={() => handlelogout()}>cick</Button>
-				<Sidebar
-					user={userDetails}
-					onlineusers={onlineusers}
-					roomData={roomData}
-					SetroomData={SetroomData}
-				/>
-				<Chatbox
-					handleSendmsg={handleSendmsg}
-					messages={allmsg}
-					user={userDetails}
-					roomData={roomData}
-				/>
-			</Paper>
-		</>
-	);
+  const handleSendmsg = (message) => {
+    if (socketRef.current.connected) {
+      const data = {
+        message,
+        receiver: roomData.receiver,
+        sender: userDetails,
+      };
+      socketRef.current.emit("SEND_MSG", data);
+      SetAllmsg((prev) => [...prev, data]);
+      console.log("yyyyyyyyyyyyyyyy", message);
+    }
+  };
+
+  return (
+    <>
+      <Paper
+        square
+        elevation={0}
+        sx={{ width: "100vw", display: "flex", height: "100vh" }}
+      >
+        <Sidebar
+          user={userDetails}
+          onlineusers={onlineusers}
+          roomData={roomData}
+          SetroomData={SetroomData}
+          button={
+            <Button
+              sx={{ bgcolor: "red", color: "white" }}
+              onClick={() => handlelogout()}
+            >
+              Logout
+            </Button>
+          }
+        />
+        <Chatbox
+          SetAllmsg={SetAllmsg}
+          handleSendmsg={handleSendmsg}
+          messages={allmsg}
+          user={userDetails}
+          roomData={roomData}
+        />
+      </Paper>
+    </>
+  );
 };
 
 export default Home;

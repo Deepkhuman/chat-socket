@@ -7,9 +7,7 @@ const PrivateRouter = ({ element }) => {
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
-      console.log(token);
       setisAuthenticated(false);
-      console.log(isAuthenticated);
     }
   }, [isAuthenticated]);
 
