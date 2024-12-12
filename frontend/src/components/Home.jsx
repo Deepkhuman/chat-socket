@@ -7,20 +7,20 @@ import { handleError } from "../../utils";
 import axiosClient from "../Axios/axiosClient";
 import { Chatbox } from "../chat/mainchat";
 
+import { useDispatch, useSelector } from "react-redux";
+import { setUser, logoutUser, setSocketConnection, setRoomData, addMessage, setOnlineUsers, setAllmsg } from "../../redux/slice/index";
+
 const PATH = "http://localhost:3000";
 
 const Home = () => {
-  const [loggedinuser, setloggedinUser] = useState("");
+  const dispatch = useDispatch()
   const navigate = useNavigate();
-  const [Isconnected, SetIsconnected] = useState(false);
-  const [roomData, SetroomData] = useState({
-    room: null,
-    receiver: null,
-  });
 
-  const [allmsg, SetAllmsg] = useState([]);
+  const { loggedInUser, messages } = useSelector((state) => state.appstate);
+  console.log(loggedInUser);
+
   const socketRef = useRef(null);
-  const [onlineusers, Setonlineusers] = useState([]);
+
   const location = useLocation();
   const userDetails = location.state?.userData;
 
@@ -31,15 +31,20 @@ const Home = () => {
     });
 
     socketRef.current.on("connect", () => {
-      SetIsconnected(true);
+      dispatch(SetIsconnected(true));
       console.log("Socket connected with ID: ", socketRef.current.id);
       if (userDetails) {
         socketRef.current.emit("ADD_USER", userDetails);
         socketRef.current.on("USER_ADDED", (data) => {
-          Setonlineusers(data);
+          dispatch(setOnlineUsers(data));
         });
         socketRef.current.on("RECEIVE_MSG", (data) => {
-          SetAllmsg((prev) => [...prev, data]);
+          dispatch(setAllmsg((prev) => [...prev, data]));
+        });
+        socketRef.current.emit("UPDATE_READ", allmsg);
+
+        socketRef.current.on("UPDATE_READ", (data) => {
+          dispatch(setAllmsg((prev) => [...prev, data]))
         });
       }
     });
@@ -50,7 +55,7 @@ const Home = () => {
         console.log("Socket disconnected on component unmount");
       }
     };
-  }, []);
+  }, [dispatch, userDetails, messages]);
 
   useEffect(() => {
     const token = localStorage.getItem("token");
@@ -60,10 +65,10 @@ const Home = () => {
       navigate("/login");
       handleError("You must be logged in to access this page");
     } else {
-      setloggedinUser(user);
+      dispatch(setOnlineUsers(user));
       verifyToken(token);
     }
-  }, [navigate]);
+  }, [navigate, dispatch]);
 
   async function verifyToken(token) {
     try {
@@ -85,7 +90,7 @@ const Home = () => {
       if (socketRef.current) {
         socketRef.current.emit("LOGOUT");
         socketRef.current.disconnect();
-        SetIsconnected(false);
+        dispatch(setSocketConnection(false));
         console.log("Socket disconnected");
       }
 
@@ -98,16 +103,19 @@ const Home = () => {
     }
   }
 
-  const handleSendmsg = (message) => {
+  const handleSendmsg = (message, image) => {
     if (socketRef.current.connected) {
       const data = {
         message,
+        image: image == undefined ? null : image,
         receiver: roomData.receiver,
-        sender: userDetails,
+        sender: loggedInUser,
         isRead: false,
+
       };
+      console.log("image", image)
       socketRef.current.emit("SEND_MSG", data);
-      SetAllmsg((prev) => [...prev, data]);
+      dispatch(setAllmsg((prev) => [...prev, data]))
     }
   };
 

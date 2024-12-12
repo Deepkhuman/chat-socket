@@ -5,6 +5,7 @@ import Footer from "./Footer";
 import Header from "./Header";
 import axiosClient from "../../Axios/axiosClient";
 
+
 const Chatbox = ({
   roomData,
   SetroomData,
@@ -23,9 +24,20 @@ const Chatbox = ({
     receiverId: roomData?.receiver?.id,
   };
 
+  console.log("^^^^^^^^^^^^^^^^", messages)
+
+
+  useEffect(() => {
+    const response = axiosClient.get("/getmessage");
+    const result = response.then((res) => {
+      SetAllmsg((prev) => [...prev, res])
+    })
+  }, [SetAllmsg, messages.id])
+
+
   useEffect(() => {
     if (data?.senderId && data?.receiverId) {
-      console.log("Fetching messages with data:", data);
+      // console.log("Fetching messages with data:", data);
 
       SetAllmsg([]);
 
@@ -42,6 +54,7 @@ const Chatbox = ({
         })
         .catch((error) => {
           console.error("Error fetching messages:", error);
+
         });
     }
   }, [user?.id, roomData?.receiver?.id, SetAllmsg]);

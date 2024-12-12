@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const { User } = require("../models/User");
 const jwt = require("jsonwebtoken");
 const { Message } = require("../models/Message");
+const { Readmessage } = require("../models/Readmessage");
 require("dotenv").config();
 
 async function getuser(req, res) {

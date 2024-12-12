@@ -24,7 +24,6 @@ const Header = ({ button }) => {
   return (
     <Card
       sx={{
-        bgcolor: "primary.light",
         borderRadius: 0,
         color: "primary.contrastText",
         bgcolor: "#016b61",

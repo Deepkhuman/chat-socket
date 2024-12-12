@@ -1,7 +1,7 @@
 const { Op } = require("sequelize");
 const { Message } = require("../models/Message");
 const { User } = require("../models/User");
-
+const { ReadReceipt } = require("../models/Readmessage");
 const savemsg = async (data) => {
   try {
     console.log("req----------?", data);
@@ -12,6 +12,15 @@ const savemsg = async (data) => {
     };
 
     const newMessage = await Message.create(messageData);
+
+    const postmessage = await ReadReceipt.create({
+      messageId: newMessage.id,
+      senderId: newMessage.sender,
+      userId: newMessage.receiver,
+    });
+
+    // console.log("Message Insertted Successfully", newMessage);
+
     return newMessage.dataValues;
   } catch (error) {
     console.error("Error saving message:", error);
@@ -22,7 +31,7 @@ const savemsg = async (data) => {
 const getPastMessages = async (req, res) => {
   try {
     const { senderId, receiverId } = req.body;
-    console.log("-----------------------", req.body);
+
     const messages = await Message.findAll({
       where: {
         [Op.or]: [
@@ -52,6 +61,7 @@ const getPastMessages = async (req, res) => {
       sentAt: message.sentAt,
       sender: message.senderUser.dataValues,
       receiver: message.receiverUser.dataValues,
+      isRead: message.isRead,
     }));
     // console.log("Fetched Messages:", formattedMessages);
 

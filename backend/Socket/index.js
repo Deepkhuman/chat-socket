@@ -35,8 +35,12 @@ function socketInit(server) {
       io.emit("USER_ADDED", onlineusers);
     });
 
+    socket.on("UPDATE_READ", (msg) => {
+      io.emit("UPDATE_READ", msg);
+    });
+
     socket.on("SEND_MSG", (msg) => {
-      console.log("--=-=-=-=-", msg);
+      // console.log("--=-=-=-=-", msg);
       socket.to(msg.receiver.socketId).emit("RECEIVE_MSG", msg);
 
       const send = savemsg(msg);

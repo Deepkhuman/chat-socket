@@ -1,6 +1,7 @@
 const { Sequelize, DataTypes } = require("sequelize");
-const { User } = require("./User");
 const { Message } = require("./Message");
+const { User } = require("./User");
+
 require("dotenv").config();
 
 const sequelize = new Sequelize(
@@ -14,46 +15,60 @@ const sequelize = new Sequelize(
   }
 );
 
-class MessageReceipt extends Model {}
-
-MessageReceipt.init(
+const ReadReceipt = sequelize.define(
+  "ReadReceipt",
   {
     id: {
       type: DataTypes.INTEGER,
-      autoIncrement: true,
       primaryKey: true,
+      autoIncrement: true,
     },
-    message_id: {
+    messageId: {
       type: DataTypes.INTEGER,
-      allowNull: false,
       references: {
         model: Message,
         key: "id",
       },
-    },
-    user_id: {
-      type: DataTypes.INTEGER,
       allowNull: false,
+    },
+    senderId: {
+      type: DataTypes.INTEGER,
       references: {
         model: User,
         key: "id",
       },
     },
-    is_read: {
+    userId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: User,
+        key: "id",
+      },
+      allowNull: false,
+    },
+    isRead: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
     },
-    read_at: {
-      type: DataTypes.DATE,
-      allowNull: true,
-    },
   },
   {
-    sequelize,
-    modelName: "MessageReceipt",
-    tableName: "message_receipts",
-    timestamps: false,
+    tableName: "read_receipts",
   }
 );
 
-module.exports = MessageReceipt;
+// Relationships
+ReadReceipt.belongsTo(Message, { foreignKey: "messageId" });
+Message.hasMany(ReadReceipt, { foreignKey: "messageId" });
+
+ReadReceipt.belongsTo(User, { foreignKey: "userId" });
+User.hasMany(ReadReceipt, { foreignKey: "userId" });
+
+ReadReceipt.belongsTo(User, { foreignKey: "senderId" });
+User.hasMany(ReadReceipt, { foreignKey: "senderId" });
+
+sequelize
+  .sync({ force: false })
+  .then(() => console.log("ReadMessages table created or verified"))
+  .catch((err) => console.error("Error syncing models:", err));
+
+module.exports = { ReadReceipt };

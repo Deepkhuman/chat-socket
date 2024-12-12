@@ -9,13 +9,17 @@ function App() {
   return (
     <div>
       <Routes>
+        <Route path="*" element={<Navigate to="/login" />} />
+
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+
         <Route
           path="/dashboard/*"
           element={<PrivateRouter element={<Home />} />}
         />
+
       </Routes>
     </div>
   );

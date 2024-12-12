@@ -9,9 +9,47 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import DoneAllIcon from "@mui/icons-material/DoneAll";
+import axiosClient from "../../Axios/axiosClient";
 
 const Chatarea = ({ messages, user, roomData }) => {
-  console.log("Current Messages:", messages);
+  const [getMsg, setMsg] = useState([]);
+  // console.log("Current Messages:", messages);
+
+  const getLatestMessage = () => {
+    if (roomData.room) {
+      const response = axiosClient.get("/getmessage");
+      response.then((res) => {
+        setMsg((prev) => [...prev, res.message]);
+      });
+    }
+  }
+  useEffect(() => {
+    const updatedMessages = getMsg.map((roomMessages) =>
+      roomMessages.map((message) => {
+        if (message.userId === user.id && !message.isRead) {
+          message.isRead = true;
+
+          axiosClient
+            .post("/updateReadMessage", {
+              messageId: message.messageId,
+              isRead: true,
+            })
+            .then((response) => {
+              getLatestMessage()
+              console.log("Message read status updated successfully", response);
+            })
+            .catch((error) => {
+              console.error("Error updating read status", error);
+            });
+        }
+        return message;
+      })
+    );
+  }, [getMsg]);
+
+  useEffect(() => {
+    getLatestMessage()
+  }, [messages]);
 
   return (
     <Box
@@ -34,17 +72,6 @@ const Chatarea = ({ messages, user, roomData }) => {
         }}
       >
         {messages.map((item, index) => {
-          // const dateString = item?.sentAt;
-          // const date = new Date(dateString);
-
-          // console.log(item);
-          // const hours = date.getUTCHours();
-          // const minutes = date.getUTCMinutes();
-
-          // const time = `${hours.toString().padStart(2, "0")}:${minutes
-          //   .toString()
-          //   .padStart(2, "0")}`;
-
           if (!item?.sender?.id) return null;
 
           return item.sender.id === user?.id ? (
@@ -80,24 +107,22 @@ const Chatarea = ({ messages, user, roomData }) => {
                   </Typography>
                 }
                 secondary={
-                  <>
-                    <Typography
-                      sx={{ color: "#000000" }}
-                      variant="caption"
-                      align="right"
-                    >
-                      {item.message}{" "}
-                      <DoneAllIcon
-                        sx={{
-                          ml: "2px",
-                          color: item.isRead == 1 ? "blue" : "black",
-                          fontSize: "1.6rem",
-                          mb: "4px",
-                          p: "4px",
-                        }}
-                      />
-                    </Typography>
-                  </>
+                  <Typography
+                    sx={{ color: "#000000" }}
+                    variant="caption"
+                    align="right"
+                  >
+                    {item.message}{" "}
+                    <DoneAllIcon
+                      sx={{
+                        ml: "2px",
+                        color: item.isRead == 1 ? "blue" : "black",
+                        fontSize: "1.6rem",
+                        mb: "4px",
+                        p: "4px",
+                      }}
+                    />
+                  </Typography>
                 }
               />
             </ListItem>
@@ -116,23 +141,21 @@ const Chatarea = ({ messages, user, roomData }) => {
                 }}
                 primary={item.sender.firstname}
                 secondary={
-                  <>
+                  <Typography
+                    variant="caption"
+                    sx={{ display: "flex", flexDirection: "row" }}
+                  >
+                    {item.message}
                     <Typography
-                      variant="caption"
-                      sx={{ display: "flex", flexDirection: "row" }}
+                      sx={{
+                        pl: "10px",
+                        fontSize: "0.8rem",
+                        fontWeight: "600",
+                      }}
                     >
-                      {item.message}
-                      <Typography
-                        sx={{
-                          pl: "10px",
-                          fontSize: "0.8rem",
-                          fontWeight: "600",
-                        }}
-                      >
-                        {/* {time} */}
-                      </Typography>
+                      {/* {time} */}
                     </Typography>
-                  </>
+                  </Typography>
                 }
               />
             </ListItem>

@@ -18,7 +18,11 @@ const Message = sequelize.define(
   {
     message: {
       type: DataTypes.TEXT,
-      allowNull: false,
+      allowNull: true,
+    },
+    image: {
+      type: DataTypes.TEXT,
+      allowNull: true,
     },
     isRead: {
       type: DataTypes.BOOLEAN,
@@ -57,7 +61,7 @@ User.hasMany(Message, { foreignKey: "receiver", as: "receivedMessages" });
 Message.belongsTo(User, { foreignKey: "receiver", as: "receiverUser" });
 
 sequelize
-  .sync({ force: true })
+  .sync({ force: false })
   .then(() => console.log("Message table created or verified"))
   .catch((err) => console.error("Error syncing models:", err));
 
