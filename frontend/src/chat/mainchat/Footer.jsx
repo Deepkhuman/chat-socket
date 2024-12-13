@@ -21,29 +21,22 @@ const Footer = ({ handleSendmsg }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (image) {
-      handleSendmsg(msg, image)
+      handleSendmsg(msg, image);
     } else {
       handleSendmsg(msg);
     }
-    e.target.reset();
-    setImage()
-    Setmsg()
+    Setmsg("");
+    setImage(null);
+    e.target.reset()
   };
 
   const handleFileSelect = async (e) => {
-    const file = e.target.files;
-    if (file && file.length > 0) {
-      const formData = new FormData();
-      console.log("Selected files : ", file[0])
-
-      formData.append("file", file[0]);
-
-      console.log("lllllllllll", formData)
-      if (file) {
-        setImage(formData)
-      }
+    const file = e.target.files[0];
+    if (file) {
+      console.log("Selected file:", file);
+      setImage(file);
     }
-  }
+  };
 
   const handleIconButtonClick = () => {
     if (fileInputRef.current)

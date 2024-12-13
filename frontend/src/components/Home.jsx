@@ -109,18 +109,32 @@ const Home = () => {
     if (socketRef.current.connected) {
       const data = {
         message,
-        image: image == undefined ? null : image,
+        image: "",
         receiver: roomData.receiver,
         sender: userDetails,
         isRead: false,
-
       };
-      console.log("image", image)
-      socketRef.current.emit("SEND_MSG", data);
-      SetAllmsg((prev) => [...prev, data]);
+
+      if (image && image.size > 0) {
+        console.log(image)
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          data.image = reader.result;  // This will be the base64 image string
+          console.log("Sending message with image:", data);
+
+          // Emit the data after image is read and converted to base64
+          socketRef.current.emit("SEND_MSG", data);
+          SetAllmsg((prev) => [...prev, data]);
+        };
+
+        reader.readAsDataURL(image);  // Read the image as base64 string
+      } else {
+        console.log("Sending message without image:", data);
+        socketRef.current.emit("SEND_MSG", data);
+        SetAllmsg((prev) => [...prev, data]);
+      }
     }
   };
-
   return (
     <>
       <Paper

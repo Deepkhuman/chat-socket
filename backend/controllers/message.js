@@ -4,8 +4,9 @@ const { User } = require("../models/User");
 const { ReadReceipt } = require("../models/Readmessage");
 const savemsg = async (data) => {
   try {
-    console.log("req----------?", data);
+    // console.log("req----------?", data);
     const messageData = {
+      image: data?.image || "",
       message: data?.message,
       sender: data.sender.id,
       receiver: data.receiver.id,
@@ -58,6 +59,7 @@ const getPastMessages = async (req, res) => {
     const formattedMessages = messages.map((message) => ({
       id: message.id,
       message: message.message,
+      image: message.image,
       sentAt: message.sentAt,
       sender: message.senderUser.dataValues,
       receiver: message.receiverUser.dataValues,

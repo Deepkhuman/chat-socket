@@ -13,7 +13,7 @@ import axiosClient from "../../Axios/axiosClient";
 
 const Chatarea = ({ messages, user, roomData }) => {
   const [getMsg, setMsg] = useState([]);
-  // console.log("Current Messages:", messages);
+  console.log("Current Messages:", messages);
 
   const getLatestMessage = () => {
     if (roomData.room) {
@@ -72,7 +72,9 @@ const Chatarea = ({ messages, user, roomData }) => {
         }}
       >
         {messages.map((item, index) => {
+
           if (!item?.sender?.id) return null;
+          const imageUrl = item?.image ? `http://localhost:3000/${item?.image}` : null;
 
           return item.sender.id === user?.id ? (
             <ListItem
@@ -98,31 +100,39 @@ const Chatarea = ({ messages, user, roomData }) => {
                   bgcolor: "#e2ffc7",
                 }}
                 key={item.id}
-                primary={
-                  <Typography
-                    sx={{ color: "#000000", fontSize: "1rem" }}
-                    align="right"
-                  >
-                    {"Me"}
-                  </Typography>
-                }
+                // primary={
+                //   <Typography
+                //     sx={{ color: "#000000", backgroundColor: "GrayText", fontSize: "1rem" }}
+                //     align="right"
+                //   >
+                //     {"Me"}
+                //   </Typography>
+                // }
                 secondary={
-                  <Typography
-                    sx={{ color: "#000000" }}
-                    variant="caption"
-                    align="right"
-                  >
-                    {item.message}{" "}
-                    <DoneAllIcon
-                      sx={{
-                        ml: "2px",
-                        color: item.isRead == 1 ? "blue" : "black",
-                        fontSize: "1.6rem",
-                        mb: "4px",
-                        p: "4px",
-                      }}
-                    />
-                  </Typography>
+
+                  <>
+                    {imageUrl && (
+                      <img src={imageUrl} alt="Imagedata" />
+                    )}
+                    <Typography
+                      sx={{ color: "#000000" }}
+                      variant="caption"
+                      align="right"
+                    >
+
+                      {item.message}{" "}
+                      <DoneAllIcon
+                        sx={{
+                          ml: "2px",
+                          color: item.isRead == 1 ? "blue" : "black",
+                          fontSize: "1.6rem",
+                          mb: "4px",
+                          p: "4px",
+                        }}
+                      />
+                    </Typography>
+                  </>
+
                 }
               />
             </ListItem>
@@ -141,21 +151,27 @@ const Chatarea = ({ messages, user, roomData }) => {
                 }}
                 primary={item.sender.firstname}
                 secondary={
-                  <Typography
-                    variant="caption"
-                    sx={{ display: "flex", flexDirection: "row" }}
-                  >
-                    {item.message}
+                  <>
+                    {imageUrl && (
+                      <img src={imageUrl} alt="Imagedata" />
+                    )}
+
                     <Typography
-                      sx={{
-                        pl: "10px",
-                        fontSize: "0.8rem",
-                        fontWeight: "600",
-                      }}
+                      variant="caption"
+                      sx={{ display: "flex", flexDirection: "row" }}
                     >
-                      {/* {time} */}
+                      {item.message}
+                      <Typography
+                        sx={{
+                          pl: "10px",
+                          fontSize: "0.8rem",
+                          fontWeight: "600",
+                        }}
+                      >
+                        {/* {time} */}
+                      </Typography>
                     </Typography>
-                  </Typography>
+                  </>
                 }
               />
             </ListItem>

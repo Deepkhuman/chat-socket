@@ -11,6 +11,7 @@ const { Server } = require("socket.io");
 const httpServer = createServer(app);
 
 const socketInit = require("./Socket/index");
+const path = require("path");
 
 app.use(
   cors({
@@ -26,6 +27,7 @@ app.use(express.urlencoded({ extended: false }));
 ConnectDb();
 
 app.use("/api", router);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 router.use("/", chatRouter);
 

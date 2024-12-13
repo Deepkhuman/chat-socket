@@ -39,4 +39,12 @@ const updateReadMessage = async (req, res) => {
   }
 };
 
-module.exports = { getMessages, updateReadMessage };
+const handleImage = (req, res) => {
+  const data = {
+    image: req.body,
+  };
+
+  console.log(data);
+};
+
+module.exports = { getMessages, updateReadMessage, handleImage };

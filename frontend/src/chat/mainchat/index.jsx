@@ -30,7 +30,7 @@ const Chatbox = ({
   useEffect(() => {
     const response = axiosClient.get("/getmessage");
     const result = response.then((res) => {
-      SetAllmsg((prev) => [...prev, res])
+      SetAllmsg((prev) => [res, ...prev])
     })
   }, [SetAllmsg, messages.id])
 
