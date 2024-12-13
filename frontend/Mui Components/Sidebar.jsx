@@ -14,8 +14,6 @@ import Divider from "@mui/material/Divider";
 import List from "@mui/material/List";
 import React, { useEffect, useState } from "react";
 import { Header } from "./Header";
-import { useSelector, useDispatch } from "react-redux"
-
 
 const Sidebar = ({ button, user, onlineusers, SetroomData, roomData }) => {
   const [value, setValue] = useState(0);
@@ -23,6 +21,9 @@ const Sidebar = ({ button, user, onlineusers, SetroomData, roomData }) => {
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
+
+  console.log("RoomData ===============------->", roomData);
+
 
   const handleChatRoom = (user) => {
     SetroomData((prevRoomData) => ({
