@@ -50,6 +50,14 @@ const Chatarea = ({ messages, user, roomData }) => {
 		}
 	}, [messages]); // Trigger scroll when messages change
 
+	const getLatestMessage = () => {
+		if (roomData.room) {
+			const response = axiosClient.get("/getmessage");
+			response.then((res) => {
+				setMsg((prev) => [...prev, res.message]);
+			});
+		}
+	};
 	useEffect(() => {
 		const updatedMessages = getMsg.map((roomMessages) =>
 			roomMessages.map((message) => {
@@ -73,15 +81,6 @@ const Chatarea = ({ messages, user, roomData }) => {
 			})
 		);
 	}, [getMsg]);
-
-	const getLatestMessage = () => {
-		if (roomData.room) {
-			const response = axiosClient.get("/getmessage");
-			response.then((res) => {
-				setMsg((prev) => [...prev, res.message]);
-			});
-		}
-	};
 
 	useEffect(() => {
 		getLatestMessage();
@@ -145,7 +144,7 @@ const Chatarea = ({ messages, user, roomData }) => {
 											<DoneAllIcon
 												sx={{
 													ml: "2px",
-													color: item.isRead === 1 ? "blue" : "black",
+													color: item.isRead == 1 ? "blue" : "black",
 													fontSize: "1.6rem",
 													mb: "4px",
 													p: "4px",
