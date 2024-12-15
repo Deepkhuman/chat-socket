@@ -28,6 +28,7 @@ const Login = () => {
 			if (error.status === 401) {
 				return handleError("Invalid username or password");
 			}
+			console.log(error);
 			handleError(error?.response?.data?.error?.details[0].message);
 		}
 	};
