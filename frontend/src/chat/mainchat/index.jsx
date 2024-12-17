@@ -13,8 +13,13 @@ const Chatbox = ({
   messages,
   user,
   SetAllmsg,
+  socketRef
 }) => {
   const [room, Setroom] = useState();
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingUserId, setTypingUserId] = useState(null);
+
+  console.log("typingUserId", typingUserId)
   useEffect(() => {
     Setroom(roomData.room);
   }, [roomData.room]);
@@ -24,7 +29,7 @@ const Chatbox = ({
     receiverId: roomData?.receiver?.id,
   };
 
-  console.log("^^^^^^^^^^^^^^^^", messages)
+  console.log("^^^^^^^^^^^^^^^^", data)
 
 
   useEffect(() => {
@@ -71,14 +76,23 @@ const Chatbox = ({
     >
       {room ? (
         <>
-          <Header roomData={roomData} />
+          <Header typingUserId={typingUserId} roomData={roomData} isTyping={isTyping} user={user} data={data} />
+
           <Chatarea
             user={user}
             SetroomData={SetroomData}
             roomData={roomData}
             messages={messages}
           />
-          <Footer handleSendmsg={handleSendmsg} />
+
+          <Footer
+            roomData={roomData}
+            setTypingUserId={setTypingUserId}
+            socketRef={socketRef}
+            user={user}
+            handleSendmsg={handleSendmsg}
+            isTyping={isTyping}
+            setIsTyping={setIsTyping} />
         </>
       ) : (
         <>Please Select Among Users to Chat with Them</>

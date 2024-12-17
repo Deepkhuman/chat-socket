@@ -61,32 +61,29 @@ function socketInit(server) {
     });
 
     socket.on("SEND_MSG", (msg) => {
-      // Check if there's an image in the message
+      console.log("::::::::::::", msg);
+
       if (msg.image && msg.image.length > 0) {
         console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-        // Extract MIME type and base64 content from the image
+
         const base64Data = extractBase64Data(msg.image);
 
         if (base64Data) {
           const { mimeType, base64Content } = base64Data;
           console.log("Mime Type:", mimeType);
 
-          // Determine file extension based on MIME type
-          const extension = mimeType.split("/")[1]; // Extract "png", "jpeg", etc.
+          const extension = mimeType.split("/")[1];
           const imageFileName = `${Date.now()}_image.${extension}`;
 
           const uploadsDir = path.join(__dirname, "../uploads");
 
-          // Ensure the uploads directory exists
           ensureDirectoryExists(uploadsDir);
 
           const imagePath = path.join(uploadsDir, imageFileName);
           console.log("Saving image to:", imagePath);
 
-          // Convert base64 string to a Buffer
           const imageBuffer = Buffer.from(base64Content, "base64");
 
-          // Write the image to disk using async/await
           fs.writeFile(imagePath, imageBuffer, (err) => {
             if (err) {
               console.error("Error saving image:", err);
@@ -95,15 +92,13 @@ function socketInit(server) {
 
             console.log("Image saved successfully at:", imagePath);
 
-            // Save the relative path to the image (relative to the 'uploads' folder)
             const relativeImagePath = "uploads/" + imageFileName;
             msg.image = relativeImagePath;
 
             console.log("image path:", msg.image);
-            // Emit the updated message to the receiver
+
             socket.to(msg.receiver.socketId).emit("RECEIVE_MSG", msg);
 
-            // Save the message to the database
             savemsg(msg)
               .then((res) => {
                 io.emit("SavedDB_message", res);
@@ -119,7 +114,6 @@ function socketInit(server) {
           );
         }
       } else {
-        // If no image, just emit the message as is
         socket.to(msg.receiver.socketId).emit("RECEIVE_MSG", msg);
         savemsg(msg)
           .then((res) => {
@@ -129,6 +123,12 @@ function socketInit(server) {
             console.log("Error saving message to DB:", err);
           });
       }
+    });
+
+    socket.on("TYPING", (data) => {
+      const { user, receiver, typing } = data;
+      socket.to(receiver.socketId).emit("TYPING", { typing, user });
+      socket.emit("TYPING", { typing, user });
     });
 
     socket.on("disconnect", () => {

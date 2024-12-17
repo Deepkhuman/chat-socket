@@ -40,6 +40,7 @@ const Home = () => {
 					Setonlineusers(data);
 				});
 				socketRef.current.on("RECEIVE_MSG", (data) => {
+
 					SetAllmsg((prev) => [...prev, data]);
 				});
 				socketRef.current.emit("UPDATE_READ", allmsg);
@@ -118,15 +119,15 @@ const Home = () => {
 				console.log(image);
 				const reader = new FileReader();
 				reader.onloadend = () => {
-					data.image = reader.result; // This will be the base64 image string
+					data.image = reader.result;
 					console.log("Sending message with image:", data);
 
-					// Emit the data after image is read and converted to base64
+
 					socketRef.current.emit("SEND_MSG", data);
 					SetAllmsg((prev) => [...prev, data]);
 				};
 
-				reader.readAsDataURL(image); // Read the image as base64 string
+				reader.readAsDataURL(image);
 			} else {
 				console.log("Sending message without image:", data);
 				socketRef.current.emit("SEND_MSG", data);
@@ -156,6 +157,7 @@ const Home = () => {
 					}
 				/>
 				<Chatbox
+					socketRef={socketRef}
 					SetAllmsg={SetAllmsg}
 					handleSendmsg={handleSendmsg}
 					messages={allmsg}

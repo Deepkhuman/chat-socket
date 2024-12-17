@@ -12,8 +12,11 @@ import {
 } from "@mui/material";
 import React from "react";
 
-const Header = ({ roomData }) => {
-  console.log(roomData);
+const Header = ({ roomData, isTyping, user, data, typingUserId }) => {
+
+
+  console.log("typing ID", typingUserId)
+  console.log("current user", user.id)
   return (
     <Card
       sx={{
@@ -46,11 +49,23 @@ const Header = ({ roomData }) => {
           </Typography>
         }
         subheader={
-          <Typography sx={{ color: "white" }} variant="caption">
-            {roomData.receiver.email}
-          </Typography>
+          <>
+            {
+              isTyping && typingUserId !== user.id ? (
+                <Typography sx={{ color: "white", fontSize: "0.675rem" }}>
+                  Typing...
+                </Typography>
+              ) : (
+                <Typography sx={{ color: "white" }} variant="caption">
+                  {roomData.receiver.email}
+                </Typography>
+              )
+            }
+          </>
         }
+
       />
+
     </Card>
   );
 };

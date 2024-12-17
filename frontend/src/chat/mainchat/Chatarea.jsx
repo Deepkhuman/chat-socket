@@ -11,10 +11,9 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import axiosClient from "../../Axios/axiosClient";
 
-// Helper function to render images and handle files (like PDFs)
 const renderMedia = (filePath) => {
 	if (filePath.startsWith("data:image")) {
-		return <img src={filePath} height="150px" width="80px" alt="Message" />;
+		return <img src={filePath} height="150px" width="280px" alt="Message" />;
 	} else if (filePath.endsWith(".pdf")) {
 		return (
 			<Typography>
@@ -32,7 +31,7 @@ const renderMedia = (filePath) => {
 			<img
 				src={`http://localhost:3000/${filePath}`}
 				height="150px"
-				width="80px"
+				width="280px"
 				alt="Message"
 			/>
 		);
@@ -41,14 +40,13 @@ const renderMedia = (filePath) => {
 
 const Chatarea = ({ messages, user, roomData }) => {
 	const [getMsg, setMsg] = useState([]);
-	const messageEndRef = useRef(null); // Ref for scroll position
+	const messageEndRef = useRef(null);
 
-	// Scroll to the bottom when new messages are added
 	useEffect(() => {
 		if (messageEndRef.current) {
-			messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+			messageEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
 		}
-	}, [messages]); // Trigger scroll when messages change
+	}, [messages]);
 
 	const getLatestMessage = () => {
 		if (roomData.room) {
@@ -118,23 +116,43 @@ const Chatarea = ({ messages, user, roomData }) => {
 							}}
 							key={index}
 						>
-							<ListItemAvatar>
+							{/* <ListItemAvatar>
 								<Avatar alt="Remy Sharp" src="/static/images/avatar/1.jpg" />
-							</ListItemAvatar>
+							</ListItemAvatar> */}
 							<ListItemText
 								sx={{
 									p: 1,
 									width: "auto",
 									backgroundColor: "#fff",
 									borderRadius: "3px",
-									mr: "5px",
+									mr: "15px",
 									textAlign: "right",
 									bgcolor: "#e2ffc7",
+									position: "relative",
+									"&:before": {
+										position: "absolute",
+										width: 0,
+										height: 0,
+										left: "-40px",
+										top: "-8px",
+										border: "32px solid",
+										borderColor: "#666 transparent transparent transparent",
+									},
+									"&:after": {
+										content: '""',
+										position: "absolute",
+										width: 0,
+										height: 0,
+										right: "-20px",
+										top: "0px",
+										border: "22px solid",
+										borderColor: "#e2ffc7 transparent transparent transparent",
+									},
 								}}
 								secondary={
 									<>
 										{item.image && renderMedia(item.image)}{" "}
-										{/* Use the helper function here */}
+
 										<Typography
 											sx={{ color: "#000000" }}
 											variant="caption"
@@ -167,12 +185,33 @@ const Chatarea = ({ messages, user, roomData }) => {
 									backgroundColor: "#fff",
 									borderRadius: "3px",
 									ml: "5px",
+									position: "relative",
+									"&:before": {
+
+										position: "absolute",
+										width: 0,
+										height: 0,
+										left: "-40px",
+										top: "-8px",
+										border: "32px solid",
+										borderColor: "#666 transparent transparent transparent",
+									},
+									"&:after": {
+										content: '""',
+										position: "absolute",
+										width: 0,
+										height: 0,
+										left: "-20px",
+										top: "0px",
+										border: "22px solid",
+										borderColor: "white transparent transparent transparent",
+									},
 								}}
 								primary={item.sender.firstname}
 								secondary={
 									<>
 										{item.image && renderMedia(item.image)}{" "}
-										{/* Use the helper function here */}
+
 										<Typography
 											variant="caption"
 											sx={{ display: "flex", flexDirection: "row" }}
@@ -185,9 +224,9 @@ const Chatarea = ({ messages, user, roomData }) => {
 						</ListItem>
 					);
 				})}
-				{/* Add a "ref" to the bottom of the list to trigger scroll */}
-				<div ref={messageEndRef} />
 			</List>
+
+			<div ref={messageEndRef} />
 		</Box>
 	);
 };
